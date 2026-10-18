@@ -85,6 +85,10 @@ extern ptrdiff_t g_xbox_mem_offset;
  *       g_eax = result;
  *   }
  */
+/* The wrapped functions below are the NTSC-U build's; the PAL build has
+ * its own, at its own addresses, in recomp_manual_pal.c (regen.sh hands the
+ * recompiler that file instead). */
+#if !(defined(BO3_REGION_PAL) && BO3_REGION_PAL)
 /* Custom music (BO-108, ../soundtrack.h): the functions of the title
  * through which a user soundtrack's song is opened and gets its decoder,
  * and its track start.
@@ -121,6 +125,9 @@ void sub_002FAAEF(void) { bo3_dsound_voice_done(sub_002FAAEF_gen); }
 extern void sub_001F65A0_gen(void);
 
 void sub_001F65A0(void) { bo3_wave_dict_count(sub_001F65A0_gen); }
+#else
+#include "../soundtrack.h"
+#endif /* NTSC-U */
 
 /* Pictures between the simulation's steps (../hirefresh.c):
  * the frame's steps, RenderWare's frame sync, the vehicles' draw, the

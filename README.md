@@ -1062,6 +1062,7 @@ Further documents:
 | Soft-body damage: how vehicles crumple, tear and bend | [docs/softbody.md](docs/softbody.md) |
 | Button prompt artwork | [assets/glyphs/README.md](assets/glyphs/README.md) |
 | How the parts fit together | [docs/architecture.md](docs/architecture.md) |
+| The PAL (Europe) build | [docs/pal.md](docs/pal.md) |
 
 Bug reports and pull requests are welcome. [CONTRIBUTING.md](CONTRIBUTING.md)
 says what a useful report contains, what must never be committed and where
