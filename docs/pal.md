@@ -9,8 +9,10 @@ Takedawn translates one exact `default.xbe`. Besides the North America
 | `pal-retail` | `6f7f6b46…7afa2` | `config/disc/pal-retail.manifest` (786 files) |
 
 Both have the title id `0x4541005B`, so a profile moves between them as it
-does between machines (copy `UDATA`). The PAL disc carries the French,
-German and Italian text, speech and films beside the English. Its own
+does between machines (copy `UDATA`). The PAL disc carries French,
+German and Italian text, speech and films, and no English ones
+(`Data/Global{fr,ge,it}.bin`, `tracks/{F,G,I}_DJ*.xwb`,
+`ovid/{french,german,italia}30.xmv`, `ovid/Tr{C,D}_{FRA,GER,ITA}.xmv`). Its own
 directory table spells the tracks folder `tracks/` (the NTSC-U disc has
 `Tracks/`); the manifest was made from a PAL image with
 `tools/release/make_manifest.py` and keeps that spelling. Guest paths are
@@ -19,11 +21,18 @@ looked up without regard to case on every host, so it changes nothing.
 ## What the PAL game sees
 
 The kernel answers as the North American console it was written for: the
-EEPROM's region North America and language English (`XC_LANGUAGE` 1,
-toolkit `src/kernel/kernel_xbox.c`) and an NTSC-M, 60 Hz AV pack
-(`src/kernel/kernel_hal.c`). So the PAL game runs its 60 Hz path, in
-English, for now. Reporting a PAL standard or another language is the
-toolkit's to add.
+EEPROM's region North America and an NTSC-M, 60 Hz AV pack
+(`src/kernel/kernel_hal.c`). So the PAL game runs its 60 Hz path.
+Reporting a PAL standard is the toolkit's to add.
+
+The language is `game.language` (toolkit `xbox_GetLanguage`,
+`src/kernel/kernel_xbox.c`), English unless set. The game picks its files
+from it, and with English, which this disc does not have, it takes the
+French ones (a headless start on 2026-10-22: `Data\GlobalFr.bin`,
+`ovid\french30.xmv`). `bo3_languages_init` (`src/game/main.c`) looks for
+the game's text files at start and hands the languages found to the
+overlay, whose Language row (Display page) then offers German, French and
+Italian. A language the disc lacks is not passed to the kernel.
 
 ## Building it
 

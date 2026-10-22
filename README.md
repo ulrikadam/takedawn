@@ -581,6 +581,7 @@ still in the menu. Everything else that changes the console's look
 | Overscan | Show all, Crop, Fill height | Crop: cuts off the border a TV would hide, the sides too. Fill height drops only the black border at the top and bottom and stretches the picture to the full height (about 7% taller, as a PS2 looked on a TV); the sides stay |
 | Present fit | Letterbox, Fill 16:10 | Letterbox. Fill 16:10 fills a Steam Deck's screen and crops the sides a little |
 | Speed units | mph, km/h | mph, as on the disc. km/h also changes distances to metres. Applies from the next race |
+| Language (restart) | the languages on your disc | Only shown when the disc has more than one: the European disc has German, French and Italian text, speech and films, the US disc English only. Without a choice the game shows what an Xbox set to English would: French on the European disc |
 | Widescreen HUD | On, Off | On. With 16:9, keeps the HUD in its 4:3 shape at the edges of the picture, and the menus 4:3 in the middle with the decoration across the screen. Applies from the next race |
 | Crash Nav map | Full width, 4:3 | Full width. Shown with Widescreen HUD on. In Crash Nav's Select Location, Full width spreads the map, its route and its markers across the screen like the frame around it. 4:3 keeps the map in the shape of the rest of the menu. Changes at once |
 | Ultrawide | Off, 21:9, 32:9, Window | Off. Needs Aspect ratio 16:9. Applies from the next race |

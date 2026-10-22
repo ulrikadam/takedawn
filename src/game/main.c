@@ -55,6 +55,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>                /* strcasecmp: bo3_languages_init */
+#include <dirent.h>
 #include <math.h>
 #include <time.h>
 #include <stdbool.h>
@@ -3103,6 +3105,45 @@ static void set_quit_after(const char *seconds)
 }
 #endif
 
+/* game.language (the toolkit's kernel answers XC_LANGUAGE with it): the
+ * languages this disc has, by the title's own text files, which it names
+ * from XC_LANGUAGE (Data/Global<xx>.bin; the US disc has English only, the
+ * European one French, German and Italian). The overlay offers those. A
+ * language the disc lacks is not passed on: the kernel answers English, as
+ * before, and the title falls back as it would on such a console. */
+static void bo3_languages_init(void)
+{
+    /* XC_LANGUAGE - 1: English, Japanese, German, French, Spanish, Italian
+     * (Korean, Chinese and Portuguese have no files in this title). The
+     * English text is GlobalUs on the NTSC-U disc, GlobalEn on others. */
+    static const char *const k_text[][2] = {
+        { "globalus.bin", "globalen.bin" }, { "globalja.bin", NULL },
+        { "globalge.bin", NULL }, { "globalfr.bin", NULL },
+        { "globalsp.bin", NULL }, { "globalit.bin", NULL },
+    };
+    unsigned mask = 0, want = (unsigned)xbox_GetLanguage() - 1;
+    struct dirent *e;
+    DIR *d = opendir(BO3_GAME_DIR "/Data");
+
+    for (; d && (e = readdir(d)) != NULL; )
+        for (unsigned i = 0; i < sizeof k_text / sizeof k_text[0]; i++)
+            for (unsigned j = 0; j < 2; j++)
+                if (k_text[i][j] && !strcasecmp(e->d_name, k_text[i][j]))
+                    mask |= 1u << i;
+    if (d)
+        closedir(d);
+    if (want != 0 && !(mask & (1u << want))) {
+        XR_NOTICE("[BOOT] game.language=%s: not on this disc; the kernel reports English\n",
+                  xbox_language_names[want]);
+        recomp_env_set(RENV_GAME_LANGUAGE, NULL);
+    }
+#ifdef XBOXRECOMP_HAVE_OVERLAY
+    xbox_SettingsSetLanguages(mask);
+#endif
+    XR_NOTICE("[BOOT] languages on the disc: 0x%X, reported: %s\n", mask,
+              xbox_language_names[xbox_GetLanguage() - 1]);
+}
+
 int main(int argc, char **argv)
 {
     const char *record = NULL, *sb_scene = NULL, *data_arg = NULL;
@@ -3488,6 +3529,8 @@ int main(int argc, char **argv)
     if (!bug_report)
         xr_log_announce();   /* no settings file in this build: the build default */
 #endif
+    /* game.language: the languages on this disc, before the title asks. */
+    bo3_languages_init();
     /* The opt-in guest patches of config/patches.json (BO-79): the US disc's
      * own metric display, behind the language index. Off (mph and miles, as
      * shipped) until game.speed_units / RECOMP_SPEED_UNITS says kmh.
