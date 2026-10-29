@@ -57,6 +57,10 @@ patch sites and guest addresses the MODS page and soft-body damage added), no
 Speed units row on the metric PAL disc, and the disassembler fix for the
 downward jump table in memcpy (xboxrecomp#9) that the PAL build needs.
 
+### [itsDNNS](https://github.com/itsDNNS)
+The Language setting (`game.language`, with xboxrecomp#5): the game's text,
+speech and films in one of the languages on the disc.
+
 ## Issue reports and testing (upstream)
 
 ### [@VincxBlox](https://github.com/VincxBlox)

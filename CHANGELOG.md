@@ -12,6 +12,10 @@ a codename, a song title from the game's soundtrack.
   docs/pal.md). It installs beside Takedawn as "Takedawn PAL", with its own
   data, saves and settings. By magicseb (#28), brought up to date with 0.2.1
   by ulrikadam.
+- Language (Display, restart): the languages the disc has, as the dashboard
+  language the game reads. The European disc offers German, French and
+  Italian; without a choice it showed French. The US disc has English only
+  and shows no row. By itsDNNS.
 
 ## 0.2.1 "Hot Night Crash"
 
