@@ -115,8 +115,16 @@ if(NOT ANDROID)
     add_subdirectory(tests/mixer)
     # The GP effects image as wired for the APU's model (BO-119).
     add_subdirectory(tests/gp)
+    # Custom music at start: when the switch is due (src/game/soundtrack_start.h, BO-230).
+    add_subdirectory(tests/start)
     # When a start-up failure may show a message box (src/game/fatal.c).
     add_subdirectory(tests/fatal)
+    # The mod folders' lookup (src/game/modfs.c, docs/mod-folders.md).
+    add_subdirectory(tests/modfs)
+    # A mod's mod.toml (src/game/modmanifest.c).
+    add_subdirectory(tests/modmanifest)
+    # The MODS page in the title's Settings menu (src/game/modsmenu.c).
+    add_subdirectory(tests/modsmenu)
 endif()
 
 # Line-level symbols for the runtime libraries, so a hang sample inside one

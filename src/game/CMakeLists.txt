@@ -24,6 +24,7 @@ if(ANDROID)
         fatal.c
         controls.c
         autopilot.c
+        softbody.c
         menuentry.c
         tutorial.c
         scoreboard.c
@@ -32,6 +33,8 @@ if(ANDROID)
         soundtrack.c
         dsound_notify.c
         soundbank.c
+        hirefresh.c
+        hraudit.c
     mixer.c
     gp_image.c
     pcmanifest.c
@@ -52,6 +55,7 @@ add_executable(burnout3
     fatal.c
     controls.c
     autopilot.c
+    softbody.c
     menuentry.c
     tutorial.c
     scoreboard.c
@@ -61,6 +65,8 @@ add_executable(burnout3
     soundtrack.c
     dsound_notify.c
     soundbank.c
+    hirefresh.c
+    hraudit.c
     mixer.c
     gp_image.c
     pcmanifest.c
@@ -68,6 +74,32 @@ add_executable(burnout3
     ${RECOMP_GEN_SOURCES}
 )
 endif()
+
+# Optional mod folders (TAKEDAWN_MODS, docs/mod-folders.md): the Win32 file
+# API on Windows, POSIX (openat, fdopendir) everywhere else. A mod's mod.toml
+# is read with the toolkit's TOML reader, which is part of its enhancements
+# library; a build without that library gets the reader's one file. The
+# MODS page in the title's Settings menu (modsmenu.c) on every platform.
+target_sources(burnout3 PRIVATE modfs.c modmanifest.c modsmenu.c)
+target_include_directories(burnout3 PRIVATE ${XBOXRECOMP_DIR}/src/enhance)
+if(NOT TARGET xbox_enhance)
+    if(NOT EXISTS ${XBOXRECOMP_DIR}/src/enhance/recomp_cfg.c)
+        message(FATAL_ERROR "mod.toml needs the toolkit's TOML reader: ${XBOXRECOMP_DIR}/src/enhance/recomp_cfg.c is missing")
+    endif()
+    target_sources(burnout3 PRIVATE ${XBOXRECOMP_DIR}/src/enhance/recomp_cfg.c)
+endif()
+# The MODS page is listed only when the generated code calls its two marks
+# (cmake/modsmenu_marks.cmake): checked again whenever a generated file or
+# config/patches.json changes. A release build without them stops.
+set(_mm_marks_c ${CMAKE_CURRENT_BINARY_DIR}/modsmenu_marks.c)
+add_custom_command(OUTPUT ${_mm_marks_c}
+    COMMAND ${CMAKE_COMMAND} -DPATCHES=${CMAKE_CURRENT_SOURCE_DIR}/../../config/patches.json
+            -DGEN=${CMAKE_CURRENT_SOURCE_DIR}/recomp/gen -DOUT=${_mm_marks_c} -DRELEASE=${BO3_RELEASE}
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/modsmenu_marks.cmake
+    DEPENDS ${RECOMP_GEN_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/../../config/patches.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/modsmenu_marks.cmake
+    VERBATIM)
+target_sources(burnout3 PRIVATE ${_mm_marks_c})
 
 # The shipped shader coverage manifest (BO-208, docs/shader-prebuild.md):
 # graphics/pipelines-<backend>.manifest, compiled in as bytes so that it is

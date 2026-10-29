@@ -100,6 +100,15 @@ the D-pad and the stick as one direction, so an arrow is one step in a menu
 does). F1, and Cmd and comma on a Mac, are the settings'; while they are open the
 title sees no keys, and the keys held when they close stay unseen until let go.
 
+### Keyboard and controller as two players
+
+By default the keyboard and the first controller both drive player 1. With
+Input > First controller at Player 2 (`input.first_pad = "player2"`,
+`RECOMP_INPUT_FIRST_PAD=player2`) the keyboard is player 1 alone and the
+first controller to press a button is player 2, so two people can play
+split screen with one keyboard and one controller. Needs a toolkit with
+`input.first_pad`.
+
 ## Touch (Android)
 
 Without a controller the Android build shows on-screen controls (the
