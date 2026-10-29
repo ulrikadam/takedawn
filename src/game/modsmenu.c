@@ -58,23 +58,24 @@
 #include "platform/recomp_patch.h"
 #include "recomp_types.h"
 #include "modfs.h"
+#include "region.h"
 
 extern RECOMP_TLS uint32_t g_eax, g_ebx, g_ecx, g_edx, g_esi, g_edi, g_esp, g_ebp, g_seh_ebp;
 extern ptrdiff_t g_xbox_mem_offset;
-extern void sub_001D2879(void);          /* the title's heap: (size, tag), stdcall */
-extern void sub_00085170(void);          /* the Settings page's set-up: eax = the page */
-extern void sub_00141010(void);          /* a front-end sound, stdcall 6, eax */
+extern void BO3_SUB(sub_001D2879, sub_001D2B99)(void);          /* the title's heap: (size, tag), stdcall */
+extern void BO3_SUB(sub_00085170, sub_000853C0)(void);          /* the Settings page's set-up: eax = the page */
+extern void BO3_SUB(sub_00141010, sub_001412B0)(void);          /* a front-end sound, stdcall 6, eax */
 
 #define MM8(va)  (*(uint8_t *)((uintptr_t)g_xbox_mem_offset + (uint32_t)(va)))
 #define MM16(va) (*(uint16_t *)((uintptr_t)g_xbox_mem_offset + (uint32_t)(va)))
 #define MM32(va) (*(uint32_t *)((uintptr_t)g_xbox_mem_offset + (uint32_t)(va)))
 
-#define SP_PAGE      0x0055ABC4u
+#define SP_PAGE      BO3_VA(0x0055ABC4u, 0x0055AEE4u)
 #define SP_CURSOR    (SP_PAGE + 4)
 #define SP_COUNT     (SP_PAGE + 6)
 #define SP_ITEMS     (SP_PAGE + 8)
-#define FLOW         0x00567170u          /* the front end's state machine */
-#define STRTAB       0x004D532Cu          /* [[STRTAB] + 0xC] = the string pointers */
+#define FLOW         BO3_VA(0x00567170u, 0x00567490u)          /* the front end's state machine */
+#define STRTAB       BO3_VA(0x004D532Cu, 0x004D564Cu)          /* [[STRTAB] + 0xC] = the string pointers */
 #define TITLE_SLOT   0x6C4u               /* the Settings page's title string */
 #define HEAP_TAG     0x4D4F4453u          /* "MODS" */
 
@@ -155,7 +156,7 @@ static uint32_t mm_block(void)
         PUSH32(g_esp, HEAP_TAG);
         PUSH32(g_esp, size);
         PUSH32(g_esp, 0);                   /* the return address its ret takes */
-        sub_001D2879();
+        BO3_SUB(sub_001D2879, sub_001D2B99)();
         s_blk = g_eax;
         g_eax = a; g_ecx = c; g_edx = d; g_esp = sp;
         if (s_blk)
@@ -169,14 +170,14 @@ static void play_select(void)
 {
     uint32_t a = g_eax, c = g_ecx, d = g_edx, sp = g_esp;
     PUSH32(g_esp, 0);
-    PUSH32(g_esp, MM8(0x411560) ? 1u : 0u);
+    PUSH32(g_esp, MM8(BO3_VA(0x411560, 0x411890)) ? 1u : 0u);
     PUSH32(g_esp, 0x3F800000u);
     PUSH32(g_esp, 0x3ECCCCCDu);
     PUSH32(g_esp, 0xB701A7E2u);
     PUSH32(g_esp, 0xA9E00000u);
     PUSH32(g_esp, 0);
     g_eax = 0;
-    sub_00141010();
+    BO3_SUB(sub_00141010, sub_001412B0)();
     g_eax = a; g_ecx = c; g_edx = d; g_esp = sp;
 }
 
@@ -418,7 +419,7 @@ static void rebuild(int mode)
     s_rebuilding = 1;
     g_eax = SP_PAGE;
     PUSH32(g_esp, 0);
-    sub_00085170();
+    BO3_SUB(sub_00085170, sub_000853C0)();
     s_rebuilding = 0;
     MM32(slot) = old;
     g_eax = a; g_ebx = b; g_ecx = c; g_edx = d; g_esi = si; g_edi = di; g_esp = sp; g_ebp = bp; g_seh_ebp = sbp;
