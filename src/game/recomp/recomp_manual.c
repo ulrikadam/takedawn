@@ -125,9 +125,6 @@ void sub_002FAAEF(void) { bo3_dsound_voice_done(sub_002FAAEF_gen); }
 extern void sub_001F65A0_gen(void);
 
 void sub_001F65A0(void) { bo3_wave_dict_count(sub_001F65A0_gen); }
-#else
-#include "../soundtrack.h"
-#endif /* NTSC-U */
 
 /* Pictures between the simulation's steps (../hirefresh.c):
  * the frame's steps, RenderWare's frame sync, the vehicles' draw, the
@@ -159,6 +156,9 @@ void sub_00038200(void) { bo3_spark_history(sub_00038200_gen); }
 void sub_000367C0(void) { bo3_spark_draw(sub_000367C0_gen); }
 void sub_0013EF40(void) { bo3_race_audio(sub_0013EF40_gen); }
 void sub_00188750(void) { bo3_fx_clock(sub_00188750_gen); }
+#else
+#include "../soundtrack.h"
+#endif /* NTSC-U */
 
 recomp_func_t recomp_lookup_manual(uint32_t xbox_va)
 {
