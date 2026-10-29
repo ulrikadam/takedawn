@@ -1003,7 +1003,7 @@ static double rival_switch(int which)
         if (e && sscanf(e, "%lf,%lf", &n, &f) == 2 && n > 0.0 && f >= n) {
             fprintf(stderr, "[RIVAL] switch at %.1f / %.1f (BO3_RIVAL_SWITCH); the marker"
                     " hidden past %.1f (%.1f with 0x5A3759 = %u)\n", n, f,
-                    HD_MF(0x60E560), HD_MF(0x60E540), (unsigned)(HD_M32(0x5A3758) >> 8 & 0xFFu));
+                    HD_MF(BO3_VA(0x60E560, 0x60E870)), HD_MF(BO3_VA(0x60E540, 0x60E850)), (unsigned)(HD_M32(BO3_VA(0x5A3758, 0x5A3A78)) >> 8 & 0xFFu));
         } else {
             n = RIVAL_NEAR;
             f = RIVAL_FAR;
@@ -1136,7 +1136,7 @@ static void fx_at_flip(uint32_t flip)
              * distance, in a paused scene). */
             static float saved[64];
             static unsigned char have[64];
-            uint32_t trk = g_xbox_mem_offset ? HD_M32(0x7397B4) : 0;
+            uint32_t trk = g_xbox_mem_offset ? HD_M32(BO3_VA(0x7397B4, 0x739AC4)) : 0;
             int t = atoi(what + 5);
 
             if (trk && t >= 0 && t < 64
@@ -2282,10 +2282,10 @@ static void texup_loading_flip(void)
 
     if (!g_xbox_mem_offset)
         return;
-    state = HD_M32(0x4D53B4);
-    stage = HD_M32(0x4D5370);
+    state = HD_M32(BO3_VA(0x4D53B4, 0x4D56D4));
+    stage = HD_M32(BO3_VA(0x4D5370, 0x4D5690));
     pre = state == 5 && stage >= 0x10000u && stage < 0x08000000u && HD_M32(stage + 0x1B8u)
-       && HD_M32(0x73A1D0u + 0x134Cu) < 2;
+       && HD_M32(BO3_VA(0x73A1D0u, 0x73A4E0u) + 0x134Cu) < 2;
     if (state != 5 && state != 0) {
         how = 2;
     } else if (pre) {
@@ -2299,11 +2299,11 @@ static void texup_loading_flip(void)
     {   /* RECOMP_DEBUG=texup_log: what it read, at each change */
         static uint32_t last = 0xFFFFFFFFu;
         uint32_t mode = stage >= 0x10000u && stage < 0x08000000u ? HD_M32(stage + 0x1B8u) : 0;
-        uint32_t key = (state & 0xFF) | (mode ? 0x100u : 0) | (HD_M32(0x73A1D0u + 0x134Cu) & 0xFF) << 12
+        uint32_t key = (state & 0xFF) | (mode ? 0x100u : 0) | (HD_M32(BO3_VA(0x73A1D0u, 0x73A4E0u) + 0x134Cu) & 0xFF) << 12
                      | (uint32_t)how << 24;
         if (key != last && recomp_env(RENV_TEXUP_LOG))
             fprintf(stderr, "[TEXUP] title state %u, stage %s, car phase %u: %s (flip %u)\n",
-                    state, mode ? "on" : "none", HD_M32(0x73A1D0u + 0x134Cu),
+                    state, mode ? "on" : "none", HD_M32(BO3_VA(0x73A1D0u, 0x73A4E0u) + 0x134Cu),
                     how == 2 ? "loading" : how == 1 ? "prestart" : "play", s_uw_flips);
         last = key;
     }
@@ -2479,7 +2479,7 @@ static double s_map_box_d;              /* the info box's shift */
 static int map_info_obj(uint32_t obj, double lo, double hi)
 {
     uint32_t cb = HD_M32(obj + 0x44);
-    if (cb != 0x000F9CE0u && cb != 0x001C51A0u && cb != 0x001C1A60u && cb != 0x001C5330u)
+    if (cb != BO3_VA(0x000F9CE0u, 0x000FA040u) && cb != BO3_VA(0x001C51A0u, 0x001C54C0u) && cb != BO3_VA(0x001C1A60u, 0x001C1D80u) && cb != BO3_VA(0x001C5330u, 0x001C5650u))
         return 0;
     return HD_MF(obj + 12) < 416.0f && lo > 0.5 && hi < 639.5 && hi - lo < 400.0;
 }
@@ -2488,7 +2488,7 @@ static int map_info_obj(uint32_t obj, double lo, double hi)
  * drawn object, when its frames are synced) and where its shields go. */
 static void map_walk(uint32_t root, double rwx, double rsx, double rlx, double rlsx)
 {
-    uint32_t sc = 0x557A20u, la = HD_M32(sc + 0x2C), nl = HD_M32(sc + 0x30), l, n, fr;
+    uint32_t sc = BO3_VA(0x557A20u, 0x557D40u), la = HD_M32(sc + 0x2C), nl = HD_M32(sc + 0x30), l, n, fr;
     int guard, i, j, sel = -1, nbox = 0;
     double bx0 = 1e9, bx1 = -1e9, by0 = 1e9, by1 = -1e9;
     double px[MAP_ICONS], py[MAP_ICONS];
@@ -2500,7 +2500,7 @@ static void map_walk(uint32_t root, double rwx, double rsx, double rlx, double r
         if (HD_M32(la + l * 16) & 1u)           /* a hidden layer */
             continue;
         for (n = HD_M32(la + l * 16 + 8), guard = 0; fe_ok(n) && guard < 500; n = HD_M32(n), guard++)
-            if (HD_M32(n + 0x44) == 0x001C0790u && fe_ok(HD_M32(n + 0x40))) {
+            if (HD_M32(n + 0x44) == BO3_VA(0x001C0790u, 0x001C0AB0u) && fe_ok(HD_M32(n + 0x40))) {
                 s_map_frame = HD_M32(n + 0x40);
                 break;
             }
@@ -2521,7 +2521,7 @@ static void map_walk(uint32_t root, double rwx, double rsx, double rlx, double r
             sx = HD_MF(fr + 0x28), sy = HD_MF(fr + 0x2C);
             x = HD_MF(n + 8), y = HD_MF(n + 12), w = HD_MF(n + 0x10), h = HD_MF(n + 0x14);
             a = HD_MF(fr + 0x20) + (double)sx * x, b = a + (double)sx * w;
-            if (fr == s_map_frame && cb == 0x000D77A0u && s_map_n < MAP_ICONS) {
+            if (fr == s_map_frame && cb == BO3_VA(0x000D77A0u, 0x000D7B00u) && s_map_n < MAP_ICONS) {
                 double c = (a + b) / 2.0;
                 s_map_cx[s_map_n] = c;
                 s_map_cy[s_map_n] = HD_MF(fr + 0x24) + (double)sy * (y + h / 2.0f);
@@ -2582,15 +2582,15 @@ static void fe_decor(double *dx, double *dw)
     int left, right, a_lo;
 
     *dx = *dw = 0.0;
-    if (s_fe_scene != 0x557A20u || !g_xbox_mem_offset || !fe_ok(obj))
+    if (s_fe_scene != BO3_VA(0x557A20u, 0x557D40u) || !g_xbox_mem_offset || !fe_ok(obj))
         return;
     cb = HD_M32(obj + 0x44);
     /* A box across the frame that is not decoration: the selected menu
      * line's brackets (sub_000FB900) sit beside its text, inside the box. */
-    if (cb == 0x000FB900u)
+    if (cb == BO3_VA(0x000FB900u, 0x000FBC60u))
         return;
     fr = HD_M32(obj + 0x40);
-    root = HD_M32(0x557A20u + 0x14u);
+    root = HD_M32(BO3_VA(0x557A20u, 0x557D40u) + 0x14u);
     if (!fe_ok(fr) || !fe_ok(root))
         return;
     rwx = HD_MF(root + 0x20), rsx = HD_MF(root + 0x28);
@@ -2625,7 +2625,7 @@ static void fe_decor(double *dx, double *dw)
         if (fr == s_map_frame) {
             if (!stretched)
                 return;
-            if (cb == 0x000D77A0u || cb == 0x0005AC20u) {
+            if (cb == BO3_VA(0x000D77A0u, 0x000D7B00u) || cb == BO3_VA(0x0005AC20u, 0x0005ADD0u)) {
                 /* A shield, or a label beside one: its place, its shape. */
                 float sy = HD_MF(fr + 0x2C);
                 double cy = HD_MF(fr + 0x24) + (double)sy * (HD_MF(obj + 12) + HD_MF(obj + 0x14) / 2.0f);
