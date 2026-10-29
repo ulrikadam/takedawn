@@ -90,13 +90,20 @@ if(NOT TARGET xbox_enhance)
 endif()
 # The MODS page is listed only when the generated code calls its two marks
 # (cmake/modsmenu_marks.cmake): checked again whenever a generated file or
-# config/patches.json changes. A release build without them stops.
+# config/patches.json changes. A release build without them stops. The PAL
+# build's code has them at the PAL addresses, so it is checked against
+# config/pal/patches.json.
+if(BO3_REGION STREQUAL "PAL")
+    set(_mm_patches ${CMAKE_CURRENT_SOURCE_DIR}/../../config/pal/patches.json)
+else()
+    set(_mm_patches ${CMAKE_CURRENT_SOURCE_DIR}/../../config/patches.json)
+endif()
 set(_mm_marks_c ${CMAKE_CURRENT_BINARY_DIR}/modsmenu_marks.c)
 add_custom_command(OUTPUT ${_mm_marks_c}
-    COMMAND ${CMAKE_COMMAND} -DPATCHES=${CMAKE_CURRENT_SOURCE_DIR}/../../config/patches.json
+    COMMAND ${CMAKE_COMMAND} -DPATCHES=${_mm_patches}
             -DGEN=${CMAKE_CURRENT_SOURCE_DIR}/recomp/gen -DOUT=${_mm_marks_c} -DRELEASE=${BO3_RELEASE}
             -P ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/modsmenu_marks.cmake
-    DEPENDS ${RECOMP_GEN_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/../../config/patches.json
+    DEPENDS ${RECOMP_GEN_SOURCES} ${_mm_patches}
             ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/modsmenu_marks.cmake
     VERBATIM)
 target_sources(burnout3 PRIVATE ${_mm_marks_c})
