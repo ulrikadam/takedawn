@@ -18,6 +18,8 @@
   <a href="#faq-and-troubleshooting">FAQ</a>
   &nbsp;·&nbsp;
   <a href="#reporting-a-bug">Report a bug</a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/xenophobentx/takedawn/milestone/1">Coming in 0.2.2</a>
 </p>
 
 > [!IMPORTANT]
@@ -49,6 +51,9 @@
 - Point it at a disc image of your own Burnout 3 (USA). It installs the game
   data, then you play.
 - To update, install the new version over the old one. Saves and settings stay.
+- Coming in 0.2.2: mod support, online play, keyboard remapping and PAL
+  discs. The [0.2.2 milestone](https://github.com/xenophobentx/takedawn/milestone/1)
+  shows what's in it and which issues it fixes.
 - Settings: Back and Start, F1, or TAKEDAWN SETTINGS in the game's menu.
 - Bugs: first check the [known issues](#known-issues). Then switch on
   Advanced > Diagnostic logging, restart the game and make the
@@ -975,12 +980,19 @@ handled.
 
 ## What's next
 
-- Android: more devices (other Snapdragon handhelds, then non-Adreno GPUs
-  with Vulkan 1.3).
-- Texture packs: load replacement textures from a folder, for higher
-  resolution art and mods.
-- iPad?
-- Online: System Link over LAN and XLink Kai, then Insignia?
+The next version is 0.2.2. What goes into it, and which reported issues
+it fixes, is on the [0.2.2 milestone](https://github.com/xenophobentx/takedawn/milestone/1).
+The main parts:
+
+- Mod support: mod folders with `mod.toml`, a MODS page in Settings, and
+  HD texture packs.
+- Online play through a stand-in for EA's lobby, with a server anyone can
+  host and a LAN mode.
+- Keyboard remapping, Quit in the main menu, and a portable mode (settings,
+  saves and game data next to the program).
+- PAL (Europe) discs, with a language setting.
+
+Later: more Android devices, iPad?
 
 There are no dates.
 
