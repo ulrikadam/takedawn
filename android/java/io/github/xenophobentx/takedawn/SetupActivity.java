@@ -27,7 +27,8 @@ import java.util.Map;
  * The first start: the game's data from the player's own disc image.
  *
  * The app holds the program and none of the game's files. This page asks for
- * an image of the player's Burnout 3: Takedown disc (North America, NTSC-U)
+ * an image of the player's Burnout 3: Takedown disc (North America, NTSC-U, or
+ * Europe, PAL: BuildInfo.DISC_LONG, by the build)
  * with the system's file picker, which needs no storage permission, and hands
  * the open file to the installer in the native library (the toolkit's
  * disc_install.c through install.c): every file is checked against the
@@ -59,7 +60,7 @@ public class SetupActivity extends Activity {
     private Button pick, pickTree, cancel, start, driver;
     private volatile boolean running;
     private String root;
-    private String[] about = { "Burnout 3: Takedown", "North America (NTSC-U) retail", "716",
+    private String[] about = { "Burnout 3: Takedown", BuildInfo.DISC_LONG + " retail", "716",
             "2476107072", "3000000000", "" };
 
     private static native int nativeState(String root);
@@ -113,7 +114,7 @@ public class SetupActivity extends Activity {
         bar.setVisibility(View.GONE);
         box.addView(bar);
         detail = text("", 13, 0xFF909090);
-        pick = button("Choose your Burnout 3: Takedown (NTSC-U) disc image", new View.OnClickListener() {
+        pick = button("Choose your Burnout 3: Takedown (" + BuildInfo.DISC_SHORT + ") disc image", new View.OnClickListener() {
             @Override public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 i.addCategory(Intent.CATEGORY_OPENABLE);
@@ -307,15 +308,15 @@ public class SetupActivity extends Activity {
         switch (code) {
         case "not-xbox-image":
             return "Choose the image of the game disc itself: one file, about 7 GB (a full"
-                    + " disc image) or 2.5 GB (an .xiso).";
+                    + " disc image) or 2.5 to 3 GB (an .xiso).";
         case "xbox360-disc":
             return "That is an Xbox 360 disc. The game wanted here is the one for the first Xbox.";
         case "no-xbe":
         case "wrong-game":
             return "Choose the image of Burnout 3: Takedown.";
         case "wrong-version":
-            return "This program is made for the North American (NTSC-U) retail disc only."
-                    + " The European and Japanese discs and the demo are different programs.";
+            return "This program is made for the " + BuildInfo.DISC_LONG + " retail disc only."
+                    + " The other regions' discs and the demo are different programs.";
         case "truncated-image":
         case "damaged-source":
             return "The image is incomplete or not a clean copy of the disc. Make it again,"

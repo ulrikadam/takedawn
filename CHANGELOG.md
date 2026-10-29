@@ -4,6 +4,15 @@ What changed in each release of Takedawn, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Major releases carry
 a codename, a song title from the game's soundtrack.
 
+## Unreleased
+
+### Added
+
+- The European (PAL) retail disc, as a second build: `BO3_REGION=PAL` (see
+  docs/pal.md). It installs beside Takedawn as "Takedawn PAL", with its own
+  data, saves and settings. By magicseb (#28), brought up to date with 0.2.1
+  by ulrikadam.
+
 ## 0.2.1 "Hot Night Crash"
 
 Saves and settings from 0.2.0 carry over.

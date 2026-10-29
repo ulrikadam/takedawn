@@ -4,6 +4,13 @@
 # flow's marks are played by the test. Mods are folders it makes in the
 # temporary directory. No game data, no guest code.
 #   cmake --build <build> --target bo3_modsmenu_test && ctest -R bo3_modsmenu
+# The stand-in plays the NTSC-U title: its memory layout (the Settings page,
+# the list widget, the marks' registers) is that disc's, so the test is for
+# the NTSC-U build. The PAL build's marks are checked against the generated
+# code of the PAL disc (cmake/modsmenu_marks.cmake) and by tools/region/check.py.
+if(BO3_REGION STREQUAL "PAL")
+    return()
+endif()
 add_executable(bo3_modsmenu_test test_main.c
     ${CMAKE_CURRENT_LIST_DIR}/../../src/game/modsmenu.c
     ${CMAKE_CURRENT_LIST_DIR}/../../src/game/menuentry.c

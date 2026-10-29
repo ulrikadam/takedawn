@@ -1003,7 +1003,7 @@ static double rival_switch(int which)
         if (e && sscanf(e, "%lf,%lf", &n, &f) == 2 && n > 0.0 && f >= n) {
             fprintf(stderr, "[RIVAL] switch at %.1f / %.1f (BO3_RIVAL_SWITCH); the marker"
                     " hidden past %.1f (%.1f with 0x5A3759 = %u)\n", n, f,
-                    HD_MF(BO3_VA(0x60E560, 0x60E870)), HD_MF(BO3_VA(0x60E540, 0x60E850)), (unsigned)(HD_M32(BO3_VA(0x5A3758, 0x5A3A78)) >> 8 & 0xFFu));
+                    HD_MF(BO3_VA(0x60E560, 0x60E870)), HD_MF(BO3_VA(0x60E540, 0x60E850)), (unsigned)(HD_M32(BO3_VA(0x5A3758, 0x5A3A68)) >> 8 & 0xFFu));
         } else {
             n = RIVAL_NEAR;
             f = RIVAL_FAR;

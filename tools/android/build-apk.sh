@@ -56,8 +56,10 @@ HERE="$(cd "$(dirname "$0")/../.." && pwd)"
 REGION="${BO3_REGION:-NTSC-U}"
 for a in "$@"; do case "$a" in -DBO3_REGION=*) REGION="${a#-DBO3_REGION=}" ;; esac; done
 case "$REGION" in
-  NTSC-U) DISC_MANIFEST=ntsc-u-retail; APP_ID=io.github.xenophobentx.takedawn; APP_LABEL=Takedawn; APK_TAG="" ;;
-  PAL)    DISC_MANIFEST=pal-retail; APP_ID=io.github.xenophobentx.takedawn.pal; APP_LABEL="Takedawn PAL"; APK_TAG="-pal" ;;
+  NTSC-U) DISC_MANIFEST=ntsc-u-retail; APP_ID=io.github.xenophobentx.takedawn; APP_LABEL=Takedawn; APK_TAG=""
+          DISC_SHORT="NTSC-U"; DISC_LONG="North American (NTSC-U)" ;;
+  PAL)    DISC_MANIFEST=pal-retail; APP_ID=io.github.xenophobentx.takedawn.pal; APP_LABEL="Takedawn PAL"; APK_TAG="-pal"
+          DISC_SHORT="PAL"; DISC_LONG="European (PAL)" ;;
   *) echo "BO3_REGION must be NTSC-U or PAL" >&2; exit 1 ;;
 esac
 REGION_CMAKE=(-DBO3_REGION="$REGION")
@@ -142,6 +144,9 @@ final class BuildInfo {
     static final String VERSION = "$VNAME";
     /** The disc manifest the native library was built with (the installer's marker names it). */
     static final String MANIFEST_ID = "$MANIFEST_ID";
+    /** The disc this build is for, as the setup page names it. */
+    static final String DISC_SHORT = "$DISC_SHORT";
+    static final String DISC_LONG = "$DISC_LONG";
 }
 JAVA
 

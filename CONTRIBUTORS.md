@@ -46,6 +46,17 @@ applied in one-player stages, so split screen kept the Xbox layout.
 Optional mod folders: disc files replaced by files in folders named by
 `TAKEDAWN_MODS` (Windows, Linux, macOS; on Android the app's `mods` folder).
 
+### [magicseb](https://github.com/magicseb)
+The European (PAL) retail disc as a build option (#28): `BO3_REGION=PAL`, the
+address map between the two executables in `tools/region/`, the PAL install
+flow and packages that sit beside the NTSC-U ones.
+
+### [ulrikadam](https://github.com/ulrikadam)
+Brought the PAL build up to date with 0.2.1 (the high refresh wrappers, the
+patch sites and guest addresses the MODS page and soft-body damage added), no
+Speed units row on the metric PAL disc, and the disassembler fix for the
+downward jump table in memcpy (xboxrecomp#9) that the PAL build needs.
+
 ## Issue reports and testing (upstream)
 
 ### [@VincxBlox](https://github.com/VincxBlox)

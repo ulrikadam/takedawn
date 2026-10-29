@@ -47,7 +47,11 @@
 #define STEP      "disc"
 /* A whole install wants this much free: the 2.48 GB of the disc and room to
  * spare for the saves, the shader cache and the title's own cache files. */
+#if defined(BO3_REGION_PAL) && BO3_REGION_PAL
+#define FREE_NEEDED (3400ull * 1000 * 1000)     /* the PAL disc is 2.97 GB: not 34 MB of room */
+#else
 #define FREE_NEEDED (3000ull * 1000 * 1000)
+#endif
 
 /* ── the disc this program was made for ────────────────────────────── */
 
