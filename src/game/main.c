@@ -3490,8 +3490,12 @@ int main(int argc, char **argv)
 #endif
     /* The opt-in guest patches of config/patches.json (BO-79): the US disc's
      * own metric display, behind the language index. Off (mph and miles, as
-     * shipped) until game.speed_units / RECOMP_SPEED_UNITS says kmh. */
+     * shipped) until game.speed_units / RECOMP_SPEED_UNITS says kmh.
+     * The PAL disc is metric already (French, German, Italian): the
+     * setting would change nothing there, so the overlay shows no row. */
+#if !(defined(BO3_REGION_PAL) && BO3_REGION_PAL)
     recomp_patch_enable("game.speed_units", RENV_SPEED_UNITS);
+#endif
     /* BO-89: the 2D HUD in 16:9. The title lays its HUD out in 640x480 and
      * the anamorphic picture stretches it 4/3 wide; the patches squeeze the
      * HUD's own 2D scene about the screen centre and widen its layout
