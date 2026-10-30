@@ -55,7 +55,9 @@ flow and packages that sit beside the NTSC-U ones.
 Brought the PAL build up to date with 0.2.1 (the high refresh wrappers, the
 patch sites and guest addresses the MODS page and soft-body damage added), no
 Speed units row on the metric PAL disc, and the disassembler fix for the
-downward jump table in memcpy (xboxrecomp#9) that the PAL build needs.
+downward jump table in memcpy (xboxrecomp#9) that the PAL build needs. Tested
+the PAL Windows package on a real disc (#108) and found that the shipped
+shader lists had been skipped since 0.2.1.
 
 ### [itsDNNS](https://github.com/itsDNNS)
 The Language setting (`game.language`, with xboxrecomp#5): the game's text,
