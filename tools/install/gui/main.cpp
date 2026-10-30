@@ -34,6 +34,15 @@
 #define TAKEDAWN_SETUP_VERSION "0.1.0"
 #endif
 
+// The program's name in the window titles: the PAL package's is its own, as
+// its install folder and shortcuts are (tools/release/common.sh APP_TITLE).
+#ifndef TAKEDAWN_APP_TITLE
+#define TAKEDAWN_APP_TITLE "Takedawn"
+#endif
+#ifndef TAKEDAWN_DISC_SHORT
+#define TAKEDAWN_DISC_SHORT "NTSC-U"
+#endif
+
 // Test and unattended runs must never raise the operating system's crash dialog
 // on someone's screen: a fatal Qt message (no platform plugin, say) or a crash
 // ends the process by itself, with a message and a status (3 fatal message, 4
@@ -185,13 +194,13 @@ int main(int argc, char** argv) {
   if (couch) SetCouchScale();
   QApplication app(argc, argv);
   QApplication::setApplicationName("Takedawn Setup");
-  QApplication::setApplicationDisplayName("Takedawn");
+  QApplication::setApplicationDisplayName(TAKEDAWN_APP_TITLE);
   QApplication::setApplicationVersion(TAKEDAWN_SETUP_VERSION);
   QApplication::setWindowIcon(AppIcon());
 
   QCommandLineParser parser;
   parser.setApplicationDescription(
-      "Takedawn's setup window: puts the game's data in place from your own Burnout 3: Takedown (NTSC-U) disc "
+      "Takedawn's setup window: puts the game's data in place from your own Burnout 3: Takedown (" TAKEDAWN_DISC_SHORT ") disc "
       "image or folder, then starts the game. The game opens it when its data is missing.");
   parser.addHelpOption();
   parser.addVersionOption();

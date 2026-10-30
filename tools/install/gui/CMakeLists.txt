@@ -63,7 +63,8 @@ if(TAKEDAWN_REGION STREQUAL "PAL")
     # Each definition quoted whole: unquoted, the space in "Europe (PAL)" split
     # it in two, TAKEDAWN_DISC_LONG came out as "" and CMake dropped the rest.
     target_compile_definitions(takedawn_setup_ui PUBLIC "TAKEDAWN_DISC_SHORT=\"PAL\""
-                               "TAKEDAWN_DISC_LONG=\"Europe (PAL)\"")
+                               "TAKEDAWN_DISC_LONG=\"Europe (PAL)\""
+                               "TAKEDAWN_APP_TITLE=\"Takedawn PAL\"")
 endif()
 target_link_libraries(takedawn_setup_ui PUBLIC Qt6::Widgets)
 
