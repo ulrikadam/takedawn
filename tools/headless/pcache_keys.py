@@ -21,6 +21,15 @@
   pcache_keys.py info <manifest>
       Counts of a manifest and its revision.
 
+  pcache_keys.py widen -o <manifest> --fs-size <bytes> [--rev <name>] <manifest>
+      The manifest in the key format of a toolkit whose NV2ACombinerState
+      grew at its end (0.2.1 added alpha_kill: 1556 to 1560 bytes). A field
+      added there is 0 when off, so each combiner state gets zero bytes
+      appended. Its id changes with it (fnv64 of the whole state), so the
+      pipeline keys that name it are renamed. A state that has the new
+      field on is not in the old manifest anyway: the title shows it as
+      before, at its first draw. Without --rev the revision stays.
+
 The key lists are the title's data; this prints counts and hashes only.
 """
 import struct
@@ -181,6 +190,75 @@ def cmd_info(argv):
     return 0
 
 
+HDR_ID = 0x4844520000000000     # the HDR variant of a combiner state's id
+
+
+def fs_id(state, hdr, metal):
+    """The id a backend gives a combiner state (Vulkan fs_kid, Metal's kid)."""
+    h = fnv64(state)
+    if hdr:
+        h ^= HDR_ID
+    if metal:
+        return h or 1
+    return h + 3 if h <= 2 else h
+
+
+def cmd_widen(argv):
+    out = size = rev = None
+    src = []
+    i = 0
+    while i < len(argv):
+        if argv[i] == '-o':
+            out = argv[i + 1]; i += 2
+        elif argv[i] == '--fs-size':
+            size = int(argv[i + 1]); i += 2
+        elif argv[i] == '--rev':
+            rev = argv[i + 1]; i += 2
+        else:
+            src.append(argv[i]); i += 1
+    if not out or not size or len(src) != 1:
+        print(__doc__)
+        return 2
+    version, recs = read(src[0])
+    head, _, old_rev = version.partition('; manifest ')
+    field = 'NV2ACombinerState '
+    at = head.find(field)
+    if at < 0:
+        raise SystemExit(f'{src[0]}: no {field.strip()} size in [{version}]')
+    old = int(head[at + len(field):].split(';')[0])
+    if size <= old:
+        raise SystemExit(f'{src[0]}: its combiner states are {old} bytes already')
+    metal = head.startswith('metal ')
+    pad = bytes(size - old)
+    renamed = {}
+    widened = []
+    for kind, data in recs:
+        if kind in (1, 3):
+            if len(data) != old:
+                raise SystemExit(f'{src[0]}: a combiner state of {len(data)} bytes, not {old}')
+            new = data + pad
+            for hdr in (0, 1):
+                renamed[fs_id(data, hdr, metal)] = fs_id(new, hdr, metal)
+            data = new
+        widened.append((kind, data))
+    named = other = 0
+    for n, (kind, data) in enumerate(widened):
+        if kind == 2 and len(data) >= 16:
+            fs = struct.unpack_from('<Q', data, 8)[0]
+            if fs in renamed:
+                data = data[:8] + struct.pack('<Q', renamed[fs]) + data[16:]
+                widened[n] = (kind, data)
+                named += 1
+            else:
+                other += 1
+    head = head[:at] + field + str(size) + head[at + len(field) + len(str(old)):]
+    write(out, f'{head}; manifest {rev or old_rev}', widened)
+    print(f'{out}: {counts(widened)} [{head}; manifest {rev or old_rev}]')
+    print(f'combiner states {old} -> {size} bytes; {named} pipeline keys renamed, {other} name'
+          f' a shader that is no combiner state of the list (a built-in one)')
+    return 0
+
+
 def main(argv):
     if not argv or argv[0] in ('-h', '--help'):
         print(__doc__)
@@ -189,6 +267,8 @@ def main(argv):
         return cmd_manifest(argv[1:])
     if argv[0] == 'info':
         return cmd_info(argv[1:])
+    if argv[0] == 'widen':
+        return cmd_widen(argv[1:])
     if len(argv) not in (1, 2):
         print(__doc__)
         return 2
