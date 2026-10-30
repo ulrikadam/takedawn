@@ -5,6 +5,7 @@ and a tiny XBE in memory: no game data is needed.
 """
 
 import os
+import pathlib
 import struct
 import sys
 import tempfile
@@ -170,11 +171,14 @@ class XdvdfsTests(unittest.TestCase):
         self.roundtrip(0x18300000)
 
     def test_not_an_image(self):
-        with tempfile.NamedTemporaryFile() as f:
-            f.write(b"\0" * 200000)
-            f.flush()
+        # A file of its own in a folder, not a NamedTemporaryFile: Windows
+        # does not let a second open() read a temporary file that is open.
+        with tempfile.TemporaryDirectory() as t:
+            path = os.path.join(t, "zeros.iso")
+            with open(path, "wb") as f:
+                f.write(b"\0" * 200000)
             with self.assertRaises(xdvdfs.XdvdfsError):
-                xdvdfs.Image(f.name)
+                xdvdfs.Image(path)
 
     def test_unsafe_name_refused(self):
         with self.assertRaises(xdvdfs.XdvdfsError):
@@ -386,6 +390,7 @@ class LinuxPackageTests(unittest.TestCase):
             self.assertTrue(os.path.exists(os.path.join(ctx.xdg_data_home, "icons", "hicolor", "256x256", "apps",
                                                        linux.DESKTOP_ID + ".png")))
 
+    @unittest.skipIf(os.name == "nt", "runs the Linux launcher, a shell script")
     def test_launcher_refuses_without_game_data(self):
         import subprocess
         with tempfile.TemporaryDirectory() as t:
@@ -438,7 +443,7 @@ class WindowsHelperTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as t:
             src = os.path.join(t, "src.bin")
             open(src, "wb").write(b"payload")
-            url = "file://" + src
+            url = pathlib.Path(src).as_uri()      # file:///C:/... on Windows
             dest = os.path.join(t, "dl", "x.bin")
             win.download(url, dest, hashlib.sha256(b"payload").hexdigest())
             self.assertEqual(open(dest, "rb").read(), b"payload")
