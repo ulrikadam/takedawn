@@ -224,9 +224,14 @@ static int sb_pclose_win(FILE *f)
  * Profile" (the only choice that is lit), the name as offered, "save your
  * profile?" No, "Autosave will be disabled" Yes. The menus take no input
  * while they slide in, and with nothing to load they open no file to wait
- * on, so each press is given time: 150 flips. */
+ * on, so each press is given time: 150 flips.
+ *
+ * The first logo is a film of the disc's language (englis30.xmv on the
+ * NTSC-U disc; french30, german30 or italia30 on the PAL one, which has no
+ * English films), so the first file waited on is the second logo's,
+ * cri_rw30.xmv, which both discs have. */
 #define BOOT_TO_MENU \
-    { XAP_WAIT_FILE, "englis30.xmv", NULL, 0 }, \
+    { XAP_WAIT_FILE, "cri_rw30.xmv", NULL, 0 }, \
     { XAP_MARK, "starting the game", NULL, 80 }, \
     { XAP_WAIT_FILE, "titles30.xmv", NULL, 0 }, \
     { XAP_PRESS_UNTIL, "start:300", "_femain.xmv", 60 }, \
@@ -548,9 +553,10 @@ static int sweep_build(const char *spec)
  * ones D3D assembles itself too), are built by the backend's pre-warm in this
  * process, in parallel; the title is only started far enough to bring the
  * backend up (its first pictures, the logos) and left running until that is
- * done (scene_done waits for it). */
+ * done (scene_done waits for it). The Criterion logo's film is the first
+ * file waited on, as in BOOT_TO_MENU: both discs have it. */
 static const xap_step k_manifest[] = {
-    { XAP_WAIT_FILE, "englis30.xmv", NULL, 0 },
+    { XAP_WAIT_FILE, "cri_rw30.xmv", NULL, 0 },
     { XAP_MARK, "preparing graphics", NULL, 100 },
     { XAP_WAIT_FLIPS, NULL, NULL, 120 },
     { XAP_END, NULL, NULL, 0 }

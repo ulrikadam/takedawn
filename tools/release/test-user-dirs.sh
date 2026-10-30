@@ -74,9 +74,20 @@ moved() {    # <what ran>
 seed
 ( cd "$T/empty" && run "$PROG" --version ) > "$T/out/version.txt" 2>&1 || die "--version failed"
 unmoved "--version"
+# The PAL program (BO3_REGION=PAL, docs/pal.md) keeps folders of its own and
+# leaves the old name's alone, since they are NTSC-U's: for it, the steps
+# below that expect a move check that nothing moved.
+PAL=0; tr -d '\r' < "$T/out/version.txt" | grep -q '^manifest .*(pal-retail' && PAL=1
+after() {    # <what ran>
+    if [ "$PAL" = 1 ]; then unmoved "$1 (PAL)"; else moved "$1"; fi
+}
 ( cd "$T/empty" && run "$PROG" --help ) > "$T/out/help.txt" 2>&1; unmoved "--help"
 ( cd "$T/empty" && run "$PROG" --data-status ) > "$T/out/status.txt" 2>&1
-grep -q '^LOG data pending-move .*[Bb]urnout3 -> ' "$T/out/status.txt" || { cat "$T/out/status.txt" >&2; die "--data-status does not say a move is pending"; }
+if [ "$PAL" = 1 ]; then
+    grep -q '^LOG data pending-move' "$T/out/status.txt" && { cat "$T/out/status.txt" >&2; die "--data-status names a move on the PAL program"; }
+else
+    grep -q '^LOG data pending-move .*[Bb]urnout3 -> ' "$T/out/status.txt" || { cat "$T/out/status.txt" >&2; die "--data-status does not say a move is pending"; }
+fi
 unmoved "--data-status (it names $(grep -c '^LOG data pending-move' "$T/out/status.txt") pending moves)"
 ( cd "$T/empty" && run "$PROG" --install "$(win "$T/notadisc")" --check ) > "$T/out/check.txt" 2>&1; unmoved "--install <source> --check"
 ( cd "$T/empty" && run "$PROG" --bug-report --out "$(win "$T/out")" ) > "$T/out/report.txt" 2>&1; unmoved "--bug-report"
@@ -88,18 +99,20 @@ unmoved "a start without data (status 3)"
 # A real install moves them first, whatever becomes of the install itself
 # (this source is no disc, so nothing is copied).
 ( cd "$T/empty" && run "$PROG" --install "$(win "$T/notadisc")" ) > "$T/out/install.txt" 2>&1
-moved "a real --install"
+after "a real --install"
 ( cd "$T/empty" && run "$PROG" --data-status ) > "$T/out/status2.txt" 2>&1
 grep -q '^LOG data pending-move' "$T/out/status2.txt" && die "--data-status still names a pending move after it"
 ( cd "$T/empty" && run "$PROG" --install "$(win "$T/notadisc")" ) > /dev/null 2>&1
-moved "a second --install (idempotent)"
+after "a second --install (idempotent)"
 
 # Both names there: nothing is merged, nothing written over.
-mkdir -p "$OLD_CACHE"; echo other > "$OLD_CACHE/vk_pipelines.bin"
-( cd "$T/empty" && run "$PROG" --install "$(win "$T/notadisc")" ) > /dev/null 2>&1
-[ "$(cat "$OLD_CACHE/vk_pipelines.bin")" = other ] && [ "$(cat "$NEW_CACHE/vk_pipelines.bin")" = cache ] \
-    || die "with both names there a file was moved or written over"
-echo "OK   both names there: each folder is left as it is"
+if [ "$PAL" = 0 ]; then
+    mkdir -p "$OLD_CACHE"; echo other > "$OLD_CACHE/vk_pipelines.bin"
+    ( cd "$T/empty" && run "$PROG" --install "$(win "$T/notadisc")" ) > /dev/null 2>&1
+    [ "$(cat "$OLD_CACHE/vk_pipelines.bin")" = other ] && [ "$(cat "$NEW_CACHE/vk_pipelines.bin")" = cache ] \
+        || die "with both names there a file was moved or written over"
+    echo "OK   both names there: each folder is left as it is"
+fi
 
 if [ -n "$DATA" ]; then
     [ -f "$DATA/.complete" ] || die "$DATA is not an installed data root (no .complete)"
@@ -120,8 +133,8 @@ if [ -n "$DATA" ]; then
     wp="$(cat /proc/$pid/winpid 2>/dev/null || true)"
     kill $pid 2>/dev/null; wait $pid 2>/dev/null
     [ -z "$wp" ] || taskkill //F //T //PID "$wp" > /dev/null 2>&1
-    moved "a game start with its data"
-    grep -q '^\[DIRS\]' "$T/out/start.txt" || die "the game start did not log the move"
+    after "a game start with its data"
+    [ "$PAL" = 1 ] || grep -q '^\[DIRS\]' "$T/out/start.txt" || die "the game start did not log the move"
 else
     echo "NOT RUN a game start with its data (no installed data root given)"
 fi

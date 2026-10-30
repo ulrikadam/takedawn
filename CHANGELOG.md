@@ -17,6 +17,18 @@ a codename, a song title from the game's soundtrack.
   Italian; without a choice it showed French. The US disc has English only
   and shows no row. By itsDNNS.
 
+### Fixed
+
+- The shipped shader lists are used again. Since 0.2.1 their key format no
+  longer matched the program's, so they were skipped and a first race built
+  its shaders while drawing (on a Mac, 125 builds and stalls of up to 150 ms;
+  now 22). The build now stops if the two drift apart. Found by ulrikadam
+  (#108).
+- "Prepare graphics" works with the European disc, which has no English
+  logo film; the setup window names the European disc and the PAL program
+  correctly; the release checks and installer tests pass for the PAL
+  program and on Windows. By ulrikadam (#108).
+
 ## 0.2.1 "Hot Night Crash"
 
 Saves and settings from 0.2.0 carry over.

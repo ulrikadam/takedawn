@@ -77,14 +77,32 @@ function Test-UserDirs([string]$program) {
     $src = "`"$(Join-Path $prof 'notadisc')`""
     $queries = @(@("--version"), @("--help"), @("--data-status"), @("--install", $src, "--check"),
                  @("--bug-report", "--out", "`"$prof`""), @("--no-setup"), @("--build-shaders", "--status"))
+    # The PAL program keeps folders of its own (Takedawn PAL) and leaves the
+    # old name's alone: they are NTSC-U's (docs/pal.md). For it nothing may
+    # move at all, a real --install included.
+    $pal = ($Region -eq "PAL")
+    $unmoved = {
+        -not (-not (Test-Path (Join-Path $oldSave "settings.toml")) -or -not (Test-Path (Join-Path $oldCache "vk_pipelines.bin")) -or
+              -not (Test-Path (Join-Path $oldData "readme.txt")) -or (Test-Path (Join-Path $newSave "settings.toml")) -or
+              (Test-Path (Join-Path $newCache "vk_pipelines.bin")))
+    }
     foreach ($q in $queries) {
         $null = Run-Captured $program $q $log $prof
-        if (-not (Test-Path (Join-Path $oldSave "settings.toml")) -or -not (Test-Path (Join-Path $oldCache "vk_pipelines.bin")) -or
-            -not (Test-Path (Join-Path $oldData "readme.txt")) -or (Test-Path (Join-Path $newSave "settings.toml")) -or
-            (Test-Path (Join-Path $newCache "vk_pipelines.bin"))) { throw "$($q -join ' ') moved a folder of the old name" }
-        if ($q[0] -eq "--data-status" -and -not (Select-String -Path $log -Pattern '^LOG data pending-move .*Burnout3 -> ' -Quiet)) {
-            throw "--data-status does not say a move is pending"
+        if (-not (& $unmoved)) { throw "$($q -join ' ') moved a folder of the old name" }
+        if ($q[0] -eq "--data-status") {
+            $pending = Select-String -Path $log -Pattern '^LOG data pending-move .*Burnout3 -> ' -Quiet
+            if ($pal -and $pending) { throw "--data-status names a move of the NTSC-U folders" }
+            if (-not $pal -and -not $pending) { throw "--data-status does not say a move is pending" }
         }
+    }
+    if ($pal) {
+        $null = Run-Captured $program @("--install", $src) $log $prof
+        if (-not (& $unmoved) -or (Get-Content (Join-Path $oldSave "settings.toml")) -ne 'saved = "old"') {
+            throw "the PAL program's --install moved a folder of the old name"
+        }
+        Remove-Item -Recurse -Force $prof
+        Write-Host "STEP userdirs OK $($queries.Count) queries and a real --install moved nothing (PAL)"
+        return
     }
     $null = Run-Captured $program @("--install", $src) $log $prof     # no disc: nothing is copied, the folders move
     if ((Get-Content (Join-Path $newSave "settings.toml") -ErrorAction SilentlyContinue) -ne 'saved = "old"' -or
