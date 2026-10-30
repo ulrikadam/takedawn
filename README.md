@@ -19,7 +19,7 @@
   &nbsp;·&nbsp;
   <a href="#reporting-a-bug">Report a bug</a>
   &nbsp;·&nbsp;
-  <a href="https://github.com/xenophobentx/takedawn/milestone/1">Coming in 0.2.2</a>
+  <a href="https://github.com/xenophobentx/takedawn/milestone/1">Coming in 0.3</a>
 </p>
 
 > [!IMPORTANT]
@@ -51,8 +51,8 @@
 - Point it at a disc image of your own Burnout 3 (USA). It installs the game
   data, then you play.
 - To update, install the new version over the old one. Saves and settings stay.
-- Coming in 0.2.2: mod support, online play, keyboard remapping and PAL
-  discs. The [0.2.2 milestone](https://github.com/xenophobentx/takedawn/milestone/1)
+- Coming in 0.3: mod support, online play, keyboard remapping and PAL
+  discs. The [0.3 milestone](https://github.com/xenophobentx/takedawn/milestone/1)
   shows what's in it and which issues it fixes.
 - Settings: Back and Start, F1, or TAKEDAWN SETTINGS in the game's menu.
 - Bugs: first check the [known issues](#known-issues). Then switch on
@@ -980,8 +980,8 @@ handled.
 
 ## What's next
 
-The next version is 0.2.2. What goes into it, and which reported issues
-it fixes, is on the [0.2.2 milestone](https://github.com/xenophobentx/takedawn/milestone/1).
+The next version is 0.3. What goes into it, and which reported issues
+it fixes, is on the [0.3 milestone](https://github.com/xenophobentx/takedawn/milestone/1).
 The main parts:
 
 - Mod support: mod folders with `mod.toml`, a MODS page in Settings, and
